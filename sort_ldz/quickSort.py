@@ -15,7 +15,10 @@
 #     left_nums = quickSort(nums[:pivot])
 #     right_nums = quickSort(nums[pivot:])
 #     return left_nums + right_nums
-
+'''
+最原始的做法，但是这种做法是不对的，所以还是不要用了。
+记录在语雀中的方法一中。
+'''
 
 # def partition(nums):
 #     if len(nums) <= 1:
@@ -70,31 +73,60 @@
     #     if i < j:
     #         nums[i],nums[j] = nums[j],nums[i]
     # return i
-def quickSort(nums,start=0,end=None):
-    if end is None:
-        end = len(nums) - 1
-    if len(nums) <= 1:
-        return  nums
-    if start < end:
-        pivot = partition(nums,start,end)
-        quickSort(nums,start,pivot-1)
-        quickSort(nums,pivot+1,end)
+# def quickSort(nums,start=0,end=None):
+#     if end is None:
+#         end = len(nums) - 1
+#     if len(nums) <= 1:
+#         return  nums
+#     if start < end:
+#         pivot = partition(nums,start,end)
+'''
+思路一：完全正确的做法了，最主要的思路就是将pivot定在end
+然后将left赋予开始索引,去除掉end，
+紧接着开始遍历每个元素就行，将<pivot的数和left进行交换后，left+=1
+left实际上就是当前小于pivot的最大索引，最后将left的数值和pivot比较一下
+如果符合情况就调换，返回left就行了。
+'''
+# def partition(nums,start,end):
+#     pivot = nums[end]
+#     left = start
+#     for i in range(start,end):
+#         if nums[i] <= pivot:
+#             nums[left],nums[i] = nums[i],nums[left]
+#             left += 1
+#
+#     if nums[left] > pivot:
+#         nums[left],nums[end] = nums[end],nums[left]
+#     return left
+###############################################################
+# 思路二：完全正确的做法了，最主要的思路就是每当发现一个不符合情况的索引时，
+# 立刻将其进行调换。这时候调换之后，双方的索引都没有变换，但值已经发生变化，
+# 接着继续判断就行了
+def partition(nums,low,high):
+    pivot = nums[low]
+    while low < high:
+        while low < high and nums[high] >= pivot:
+            high -= 1
+        nums[low], nums[high] = nums[high], nums[low]
+        while low < high and nums[low] <= pivot:
+            low += 1
+        nums[low], nums[high] = nums[high], nums[low]
 
-def partition(nums,start,end):
-    pivot = nums[end]
-    left = start
-    for i in range(start,end):
-        if nums[i] <= pivot:
-            nums[left],nums[i] = nums[i],nums[left]
-            left += 1
+    return low
 
-    if nums[left] > pivot:
-        nums[left],nums[end] = nums[end],nums[left]
-    return left
+def quickSort(nums,low,high=None):
+
+    if high is None:
+        high = len(nums)-1
+
+    if low < high:
+        mid = partition(nums,low,high)
+        quickSort(nums,low,mid-1)
+        quickSort(nums,mid+1,high)
+    
 
 
-
-
-nums = [3,4,5,6,5,8,68,9,6,5]
-quickSort(nums)
+# nums = [3,6,4,12,5,6,5,8,68,9,6,5]
+nums = [16,0,100,1,9]
+quickSort(nums,0)
 print(nums)
